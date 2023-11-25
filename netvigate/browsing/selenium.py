@@ -1,6 +1,7 @@
 import os
 
 from selenium import webdriver
+from netvigate.browsing._base import BaseBrowser, SizeType
 from selenium.webdriver.chrome.options import Options
 
 def _is_chromedriver_in_path() -> None:
@@ -17,8 +18,8 @@ def _is_chromedriver_in_path() -> None:
 
     raise Exception('path to chromedriver.exe does not exist in path')
 
-class SeleniumBrowser:
-    """Direct methods for browsing."""
+class SeleniumBrowserUtils(BaseBrowser):
+    """Selenium browsing interface with helper methods."""
     def __init__(self, headless: bool = False):
         self._headless = headless
 
@@ -27,12 +28,24 @@ class SeleniumBrowser:
 
         # Instantiate a Chrome browser
         self._options = Options()
-        self.driver = webdriver.Chrome(options=self._options)
+        self._browser = webdriver.Chrome(options=self._options)
 
-    def go_to_page(self, url: str) -> None:
-        """Open up url in webpage."""
-        self.driver.get(url)
+    def page_to_dom(self) -> str:
+        return self._browser.page_source
 
-    def exit_browser(self) -> None:
-        """Exit webpage."""
-        self.driver.quit()
+    def page_to_screenshot(self) -> bytes:
+        return self._browser.get_screenshot_as_png()
+    
+    def page_window_size(self) -> SizeType:
+        size = self._browser.get_window_size()
+        return size['width'], size['height']
+
+    def page_viewport_size(self) -> SizeType:
+        width = self._browser.execute_script("return window.innerWidth;")
+        height = self._browser.execute_script("return window.innerHeight;")
+        return width, height
+
+    def page_webpage_size(self) -> SizeType:
+        width = self._browser.execute_script("return document.documentElement.scrollWidth;")
+        height = self._browser.execute_script("return document.documentElement.scrollHeight;")
+        return width, height
