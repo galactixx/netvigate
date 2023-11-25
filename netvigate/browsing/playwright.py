@@ -8,11 +8,12 @@ class PlaywrightBrowser:
         # Instantiate a Chrome browser
         self._driver = sync_playwright().start()
         self._browser = self._driver.chromium.launch(headless=self._headless)
+        self.page = None
 
     def go_to_page(self, url: str) -> None:
         """Open up url in webpage."""
-        page = self._browser.new_page()
-        page.goto(url)
+        self.page = self._browser.new_page()
+        self.page.goto(url)
 
     def exit_browser(self) -> None:
         """Exit webpage."""
