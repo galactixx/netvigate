@@ -18,7 +18,7 @@ def _is_chromedriver_in_path() -> None:
 
     raise Exception('path to chromedriver.exe does not exist in path')
 
-class SeleniumBrowserUtils(BaseBrowser):
+class SeleniumBrowser(BaseBrowser):
     """Selenium browsing interface with helper methods."""
     def __init__(self, headless: bool = False):
         self._headless = headless
@@ -29,6 +29,15 @@ class SeleniumBrowserUtils(BaseBrowser):
         # Instantiate a Chrome browser
         self._options = Options()
         self._browser = webdriver.Chrome(options=self._options)
+
+    def go_to_page(self, url: str) -> None:
+        self._browser.get(url)
+
+    def exit_browser(self) -> None:
+        self._browser.quit()
+
+    def exit_driver(self) -> None:
+        raise NotImplementedError("This function is not implemented.")
 
     def page_to_dom(self) -> str:
         return self._browser.page_source

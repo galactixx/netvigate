@@ -6,6 +6,21 @@ SizeType = Tuple[int, int]
 
 class BaseBrowser(ABC):
     @abstractmethod
+    def go_to_page(self, url: str) -> None:
+        """Open up url in webpage."""
+        pass
+
+    @abstractmethod
+    def exit_browser(self) -> None:
+        """Exit webpage."""
+        pass
+
+    @abstractmethod
+    def exit_driver(self) -> None:
+        """Exit playwright driver."""
+        pass
+
+    @abstractmethod
     def page_to_dom(self) -> str:
         """Extracts the DOM from a webpage."""
         pass
