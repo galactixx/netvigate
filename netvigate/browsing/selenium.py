@@ -1,8 +1,9 @@
 import os
 
 from selenium import webdriver
-from netvigate.browsing._base import BaseBrowser, SizeType
 from selenium.webdriver.chrome.options import Options
+
+from netvigate.browsing._base import BaseBrowser, SizeType
 
 def _is_chromedriver_in_path() -> None:
     """Determine the executable name based on the operating system."""
@@ -30,31 +31,36 @@ class SeleniumBrowser(BaseBrowser):
         self._options = Options()
         self._browser = webdriver.Chrome(options=self._options)
 
-    def go_to_page(self, url: str) -> None:
-        self._browser.get(url)
-
-    def exit_browser(self) -> None:
-        self._browser.quit()
-
-    def exit_driver(self) -> None:
+    async def load_webbrowser(self) -> None:
         raise NotImplementedError("This function is not implemented.")
 
-    def page_to_dom(self) -> str:
-        return self._browser.page_source
+    async def go_to_page(self, url: str) -> None:
+        self._browser.get(url)
 
-    def page_to_screenshot(self) -> bytes:
-        return self._browser.get_screenshot_as_png()
+    async def exit_browser(self) -> None:
+        self._browser.quit()
+
+    async def exit_driver(self) -> None:
+        raise NotImplementedError("This function is not implemented.")
+
+    async def page_to_dom(self) -> str:
+        content = self._browser.page_source
+        return content
+
+    async def page_to_screenshot(self) -> bytes:
+        screenshot = self._browser.get_screenshot_as_png()
+        return screenshot
     
-    def page_window_size(self) -> SizeType:
+    async def page_window_size(self) -> SizeType:
         size = self._browser.get_window_size()
         return size['width'], size['height']
 
-    def page_viewport_size(self) -> SizeType:
+    async def page_viewport_size(self) -> SizeType:
         width = self._browser.execute_script("return window.innerWidth;")
         height = self._browser.execute_script("return window.innerHeight;")
         return width, height
 
-    def page_webpage_size(self) -> SizeType:
+    async def page_webpage_size(self) -> SizeType:
         width = self._browser.execute_script("return document.documentElement.scrollWidth;")
         height = self._browser.execute_script("return document.documentElement.scrollHeight;")
         return width, height
