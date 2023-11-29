@@ -2,5 +2,9 @@ from abc import ABC, abstractmethod
 
 class BaseLLM(ABC):
     @abstractmethod
-    def get_completion(self, prompt: str) -> str:
+    def initialize_request_chain(self) -> None:
+        pass
+
+    @abstractmethod
+    def get_completion(self, content: str) -> str:
         pass

@@ -1,4 +1,5 @@
 import os
+from typing import Dict, List, Optional
 
 from openai import OpenAI
 
@@ -25,17 +26,31 @@ class OpenAILLM(BaseLLM):
         if not isinstance(self._model_name, OpenAIModels):
             raise ValueError(f'{model_name} is not a valid model name for OpenAI API')
         
-        self._messages = []
+        self._current_conversation_history: List[Dict[str, str]] = []
 
-    def get_completion(self, prompt: str) -> str:
+    def initialize_request_chain(self, user_request: str) -> None:
+        """Initialize conversation history with user request."""
+
+        self._current_conversation_history.append(
+            {"role": "system", "content": user_request})
+        
+    def get_completion(self, content: str, previous_task: Optional[str] = None) -> str:
         """Get prompt completion from OpenAI API."""
 
-        self._messages.append({"role": "user", "content": prompt})
+        # Revised conversation history by simplifying messages and reducing token length.
+        if previous_task is not None:
+            self._current_conversation_history.pop()
+            self._current_conversation_history.append(
+                {"role": "assistant", "content": previous_task})
+
+        self._current_conversation_history.append(
+            {"role": "user", "content": content}
+        )
 
         # Chat completion
         response = self._client.chat.completions.create(
             model=self._model_name.value,
-            messages=self._messages,
+            messages=self._current_conversation_history,
             temperature=self._temperature,
             stream=False,
             top_p=1,

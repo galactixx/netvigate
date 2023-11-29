@@ -37,13 +37,11 @@ class Harvester:
         try:
             data: dict = json.loads(response)
         except json.JSONDecodeError:
-            print('Bad JSON')
             return
         
         # Checking if all expected keys are present
         missing_keys = [key for key in keys_expected if key not in data]
         if missing_keys:
-            print('Missing Keys')
             return
         
         # Fix formatting; turn "None" to None and "False"/"True" to False/True
@@ -69,12 +67,12 @@ class Harvester:
         elif action == 'click':
             self._browser.click_on_selection(selector=css_selector)
 
-    def _parse_response_json(self, prompt: str, keys_expected: list) -> str:
+    def _parse_response_json(self, content: str, previous_task: str, keys_expected: list) -> Optional[dict]:
         """Parse response JSON from LLM."""
 
         counter = 0
         while True:
-            response = self._llm.get_completion(prompt=prompt)
+            response = self._llm.get_completion(content=content, previous_task=previous_task)
             response_json = self._json_validation(response=response, keys_expected=keys_expected)
 
             if response_json is None:
@@ -93,13 +91,17 @@ class Harvester:
 
         # Initialize memory
         memory = Memory(user_request=user_request)
+        self._llm.initialize_request_chain(user_request=user_request)
 
         # Navigation to an initial url
         response_json = self._parse_response_json(
-            prompt=PROMPT_INITIAL.format(user_request=user_request),
+            content=PROMPT_INITIAL.format(user_request=user_request),
+            previous_task=None,
             keys_expected=FIELDS_INITIAL_PROMPT)
+        url = response_json[PromptInitialJSON.URL.value]
 
-        self._browser.go_to_page(url=response_json[PromptInitialJSON.URL.value])
+        self._browser.go_to_page(url=url)
+        previous_task = f'navigate to {url}'
 
         while True:
 
@@ -116,12 +118,14 @@ class Harvester:
             # Get LLM completion and validate
             completed_tasks = memory.completed_memory_templatize()
             response_json = self._parse_response_json(
-                prompt=PROMPT_HARVESTER.format(
+                content=PROMPT_HARVESTER.format(
                     user_request=user_request,
                     completed_tasks=completed_tasks,
                     html_elements=page_source_templatized),
+                previous_task=previous_task,
                 keys_expected=FIELDS_HARVESTER_PROMPT
             )
+            previous_task = response_json.get(PromptHarvesterJSON.TASK.value)
 
             # Retrieve relevant element from page_source_index
             element = page_source_index[response_json[PromptHarvesterJSON.ELEMENT_ID.value]]

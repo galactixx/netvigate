@@ -69,10 +69,10 @@ def templatize_page_source_index(page_source_index: PageSourceIndexType) -> str:
 
         # Retrieve relevant attributes from element
         description = ''
+        text = element.text
         aria_label = element.get('aria-label')
 
         if aria_label is not None:
-            text = element.text
             description += aria_label
         elif text != '':
             description += text

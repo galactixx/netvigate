@@ -24,8 +24,7 @@ class PlaywrightBrowser(BaseBrowser):
         time.sleep(5)
 
     def go_to_page(self, url: str) -> None:
-        self._page.goto(url, wait_until='domcontentloaded', timeout=60000)
-        time.sleep(5)
+        self._page.goto(url, wait_until='load', timeout=10000)
 
     def exit_browser(self) -> None:
         self._browser.close()

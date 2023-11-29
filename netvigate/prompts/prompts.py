@@ -9,7 +9,7 @@ We need to navigate to an initial website. Please include url of website.
 Your response needs to be in the exact json format shown below:
 
 {{
-    "url": <url>
+    "url": str
 }}
 """
 

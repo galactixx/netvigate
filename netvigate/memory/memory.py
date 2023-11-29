@@ -3,7 +3,7 @@ from typing import Dict, List
 from netvigate.prompts.utils import PromptHarvesterJSON
 
 class Memory:
-    """Brief class to keep track of memory of llm based on tasks."""
+    """Brief mechanism to keep track of memory of LLM based on tasks completed."""
     def __init__(self, user_request: str):
         self._user_request = user_request
 
