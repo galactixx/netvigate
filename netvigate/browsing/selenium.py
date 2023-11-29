@@ -22,45 +22,42 @@ def _is_chromedriver_in_path() -> None:
 class SeleniumBrowser(BaseBrowser):
     """Selenium browsing interface with helper methods."""
     def __init__(self, headless: bool = False):
-        self._headless = headless
-
-        # Check Chrome executable path
         _is_chromedriver_in_path()
 
         # Instantiate a Chrome browser
         self._options = Options()
         self._browser = webdriver.Chrome(options=self._options)
 
-    async def load_webbrowser(self) -> None:
-        raise NotImplementedError("This function is not implemented.")
+    def click_on_selection(self) -> None:
+        pass
 
-    async def go_to_page(self, url: str) -> None:
+    def type_input(self) -> None:
+        pass
+
+    def go_to_page(self, url: str) -> None:
         self._browser.get(url)
 
-    async def exit_browser(self) -> None:
+    def exit_browser(self) -> None:
         self._browser.quit()
 
-    async def exit_driver(self) -> None:
-        raise NotImplementedError("This function is not implemented.")
-
-    async def page_to_dom(self) -> str:
+    def page_to_dom(self) -> str:
         content = self._browser.page_source
         return content
 
-    async def page_to_screenshot(self) -> bytes:
+    def page_to_screenshot(self) -> bytes:
         screenshot = self._browser.get_screenshot_as_png()
         return screenshot
     
-    async def page_window_size(self) -> SizeType:
+    def page_window_size(self) -> SizeType:
         size = self._browser.get_window_size()
         return size['width'], size['height']
 
-    async def page_viewport_size(self) -> SizeType:
+    def page_viewport_size(self) -> SizeType:
         width = self._browser.execute_script("return window.innerWidth;")
         height = self._browser.execute_script("return window.innerHeight;")
         return width, height
 
-    async def page_webpage_size(self) -> SizeType:
+    def page_webpage_size(self) -> SizeType:
         width = self._browser.execute_script("return document.documentElement.scrollWidth;")
         height = self._browser.execute_script("return document.documentElement.scrollHeight;")
         return width, height
