@@ -1,27 +1,33 @@
+import time
+
 from playwright.sync_api import sync_playwright
 
 from netvigate.browsing._base import (
     BaseBrowser, 
     SizeType)
 
-import time
-
 class PlaywrightBrowser(BaseBrowser):
     """Playwright browsing interface with helper methods."""
-    def __init__(self, headless: bool = False):
+    def __init__(self, headless: bool = False, delay: float = 0.5):
+        self._delay = delay
         self._browser = (sync_playwright().start()
                          .chromium.launch(headless=headless))
 
         self._page = self._browser.new_page()
 
+    def _wait_for_load(self) -> None:
+        self._page.wait_for_load_state("networkidle")
+        self._page.wait_for_function("document.readyState === 'complete'")
+        time.sleep(self._delay)
+
     def click_on_selection(self, selector: str) -> None:
         self._page.click(selector)
-        time.sleep(5)
+        self._wait_for_load()
 
     def type_input(self, tag: str, text: str, selector: str) -> None:
         self._page.type(f'{tag}[{selector}]', text)
         self._page.keyboard.press('Enter')
-        time.sleep(5)
+        self._wait_for_load()
 
     def go_to_page(self, url: str) -> None:
         self._page.goto(url, wait_until='load', timeout=10000)

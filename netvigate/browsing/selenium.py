@@ -28,11 +28,14 @@ class SeleniumBrowser(BaseBrowser):
         self._options = Options()
         self._browser = webdriver.Chrome(options=self._options)
 
+    def _wait_for_load(self) -> None:
+        raise NotImplementedError("This function is not implemented.")
+
     def click_on_selection(self) -> None:
-        pass
+        raise NotImplementedError("This function is not implemented.")
 
     def type_input(self) -> None:
-        pass
+        raise NotImplementedError("This function is not implemented.")
 
     def go_to_page(self, url: str) -> None:
         self._browser.get(url)

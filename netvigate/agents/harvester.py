@@ -125,6 +125,7 @@ class Harvester:
                 previous_task=previous_task,
                 keys_expected=FIELDS_HARVESTER_PROMPT
             )
+
             previous_task = response_json.get(PromptHarvesterJSON.TASK.value)
 
             # Retrieve relevant element from page_source_index

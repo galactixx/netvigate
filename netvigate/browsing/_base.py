@@ -7,6 +7,11 @@ SizeType = Tuple[int, int]
 
 class BaseBrowser(ABC):
     @abstractmethod
+    def _wait_for_load(self) -> None:
+        """Wait for webpage to load before proceeding with actions."""
+        pass
+
+    @abstractmethod
     def click_on_selection(self) -> None:
         """Click on selection (button, etc.)."""
         pass
