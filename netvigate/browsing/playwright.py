@@ -31,6 +31,7 @@ class PlaywrightBrowser(BaseBrowser):
 
     def go_to_page(self, url: str) -> None:
         self._page.goto(url, wait_until='load', timeout=10000)
+        self._wait_for_load()
 
     def exit_browser(self) -> None:
         self._browser.close()
